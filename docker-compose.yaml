@@ -1,0 +1,41 @@
+services:
+  mysql:
+    image: mysql:8.1
+    container_name: mysql_reservatransporte
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: reservatransporte
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: reservatransporte
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/reservatransporte
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=admin123
+      - SERVER_PORT=8080
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin_reservatransporte
+    environment:
+      PMA_HOST: mysql_reservatransporte
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: admin123
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:
